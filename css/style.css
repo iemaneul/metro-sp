@@ -20,7 +20,7 @@ a {
 #header {
     background-color: #0053A0;
     color: #FFFFFF;
-    padding: 20px;
+    padding: 15px 20px;
 }
 
 #header .navbar {
@@ -67,8 +67,8 @@ a {
 #infos {
     display: flex;
     flex-direction: column;
-    padding: 20px;
-    gap: 20px;
+    padding: 10px 20px;
+    gap: 10px;
 }
 
 #infos .service-title p {
@@ -96,7 +96,7 @@ a {
 
 #infos .main-services > div p.description {
     font-size: 12px;
-    margin: 8px 0px;
+    margin: 0px 0px 8px;
 }
 
 #infos .main-services > div button {
