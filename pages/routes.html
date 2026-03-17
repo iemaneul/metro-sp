@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+<meta charset="UTF-8">
+<title>Metrô SP</title>
+<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+
+<h1>Planejador de Rotas - Metrô SP</h1>
+
+<!-- TELA BUSCA -->
+
+<section id="tela-busca">
+
+<div class="busca">
+
+<label>Origem</label>
+<select id="origem"></select>
+
+<label>Destino</label>
+<select id="destino"></select>
+
+<button id="buscar">Encontrar rota</button>
+
+</div>
+
+</section>
+
+<!-- TELA RESULTADO -->
+
+<section id="tela-resultado" class="hidden">
+
+<div class="topo-rota">
+
+<p><strong>Origem:</strong> <span id="origem-nome"></span></p>
+<p><strong>Destino:</strong> <span id="destino-nome"></span></p>
+
+<button id="voltar">← Nova rota</button>
+
+</div>
+
+<div id="resultado"></div>
+
+</section>
+
+<script type="module" src="/js/app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+body{
+    font-family:Arial;
+    margin: 0px;
+}
+
+.hidden{
+display:none;
+}
+
+.busca{
+display:flex;
+flex-direction:column;
+gap:10px;
+max-width:300px;
+}
+
+.topo-rota{
+margin-bottom:20px;
+}
+
+.estacao{
+padding:8px;
+border-bottom:1px solid #ddd;
+}
+
+#header {
+    background-color: #0053A0;
+    color: #FFFFFF;
+    padding: 30px 20px;
+}
+
+#header .navbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#header .navbar .title {
+    width: 90%;
+}
+
+#header .navbar .notification {
+    width: 10%;
+    display: flex;
+    align-items: center;
+}
+
+#header .navbar .notification img {
+    width: 20px;
+    height: 20px;
+}
+
+#header .navbar h1 {
+    margin: 0px;
+    font-size: 16px;
+    font-weight: 500;
+}
