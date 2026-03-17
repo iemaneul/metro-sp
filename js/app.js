@@ -99,3 +99,17 @@ document
 }
 
 init()
+
+document
+.getElementById("invert")
+.onclick = ()=>{
+
+const origem = document.getElementById("origem")
+const destino = document.getElementById("destino")
+
+const temp = origem.value
+
+origem.value = destino.value
+destino.value = temp
+
+}
