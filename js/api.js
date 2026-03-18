@@ -35,3 +35,23 @@ const { data } = await supabase
 return data
 
 }
+
+export async function getLinhasDasEstacoes(){
+
+const { data } = await supabase
+.from("linha_estacoes")
+.select(`
+estacao_id,
+linhas(
+id,
+nome,
+numero,
+cor,
+text_color
+)
+`)
+.order("linha_id")
+
+return data
+
+}
