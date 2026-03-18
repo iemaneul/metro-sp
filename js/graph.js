@@ -2,17 +2,17 @@ export function criarGrafo(conexoes){
 
 const grafo = {}
 
-conexoes.forEach(c=>{
+conexoes.forEach(conexao=>{
 
-if(!grafo[c.estacao_origem]){
-grafo[c.estacao_origem] = []
+if(!grafo[conexao.origem]){
+grafo[conexao.origem] = []
 }
 
-grafo[c.estacao_origem].push({
-
-destino:c.estacao_destino,
-tempo:c.tempo_segundos
-
+grafo[conexao.origem].push({
+destino: conexao.destino,
+tempo: conexao.tempo,
+tipo: conexao.tipo,
+linhaId: conexao.linhaId || null
 })
 
 })

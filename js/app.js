@@ -1,19 +1,24 @@
-import { getConexoes, getEstacoesDaLinha, getLinhasDasEstacoes } from "./api.js"
+import { getBaldeacoes, getEstacoesDaLinha, getParadasLinha, getTrechosLinha } from "./api.js"
 import { criarGrafo } from "./graph.js"
 import { encontrarRota } from "./route.js"
 import { supabase } from "./supabase.js"
 
 let estacoes = []
-let grafo
-let linhasPorEstacao = {}
+let grafo = {}
+let paradas = []
+let paradasPorId = {}
+let paradasPorEstacao = {}
 let estacoesOrdenadasPorLinha = {}
+const ESTACOES_COMPARTILHADAS = {
+"Paulista": ["Consolacao"],
+"Consolacao": ["Paulista"]
+}
 
 async function init(){
-await carregarEstacoes()
-await carregarLinhasPorEstacao()
 
-const conexoes = await getConexoes()
-grafo = criarGrafo(conexoes)
+await carregarEstacoes()
+await carregarParadas()
+await carregarGrafo()
 
 if(document.getElementById("buscar")){
 configurarTelaBusca()
@@ -25,30 +30,6 @@ await carregarTelaResultado()
 
 }
 
-async function carregarLinhasPorEstacao(){
-
-const data = await getLinhasDasEstacoes()
-
-linhasPorEstacao = {}
-
-if(!Array.isArray(data)){
-return
-}
-
-data.forEach(item=>{
-
-if(!linhasPorEstacao[item.estacao_id]){
-linhasPorEstacao[item.estacao_id] = []
-}
-
-if(item.linhas){
-linhasPorEstacao[item.estacao_id].push(item.linhas)
-}
-
-})
-
-}
-
 async function carregarEstacoes(){
 
 const { data } = await supabase
@@ -56,12 +37,7 @@ const { data } = await supabase
 .select("*")
 .order("nome")
 
-estacoes = data
-
-if(!Array.isArray(data)){
-estacoes = []
-return
-}
+estacoes = Array.isArray(data) ? data : []
 
 const origem = document.getElementById("origem")
 const destino = document.getElementById("destino")
@@ -70,12 +46,69 @@ if(!origem || !destino){
 return
 }
 
-data.forEach(e=>{
+origem.innerHTML = ""
+destino.innerHTML = ""
 
-origem.innerHTML += `<option value="${e.id}">${e.nome}</option>`
-destino.innerHTML += `<option value="${e.id}">${e.nome}</option>`
+estacoes.forEach(estacao=>{
+origem.innerHTML += `<option value="${estacao.id}">${estacao.nome}</option>`
+destino.innerHTML += `<option value="${estacao.id}">${estacao.nome}</option>`
+})
+
+}
+
+async function carregarParadas(){
+
+const data = await getParadasLinha()
+
+paradas = Array.isArray(data) ? data : []
+paradasPorId = {}
+paradasPorEstacao = {}
+
+paradas.forEach(parada=>{
+
+paradasPorId[parada.id] = parada
+
+if(!paradasPorEstacao[parada.estacao_id]){
+paradasPorEstacao[parada.estacao_id] = []
+}
+
+paradasPorEstacao[parada.estacao_id].push(parada)
 
 })
+
+}
+
+async function carregarGrafo(){
+
+const trechos = await getTrechosLinha()
+const baldeacoes = await getBaldeacoes()
+const conexoes = []
+
+if(Array.isArray(trechos)){
+trechos.forEach(trecho=>{
+conexoes.push({
+origem: trecho.parada_origem_id,
+destino: trecho.parada_destino_id,
+tempo: trecho.tempo_segundos,
+tipo: "trecho",
+linhaId: trecho.linha_id
+})
+})
+}
+
+if(Array.isArray(baldeacoes)){
+baldeacoes.forEach(baldeacao=>{
+conexoes.push({
+origem: baldeacao.parada_origem_id,
+destino: baldeacao.parada_destino_id,
+tempo: baldeacao.tempo_segundos,
+tipo: "baldeacao",
+linhaId: null
+})
+})
+}
+
+grafo = criarGrafo(conexoes)
 
 }
 
@@ -103,7 +136,6 @@ document
 
 const origem = document.getElementById("origem")
 const destino = document.getElementById("destino")
-
 const temp = origem.value
 
 origem.value = destino.value
@@ -124,10 +156,12 @@ mostrarMensagem("Informe origem e destino pela URL para ver a rota.")
 return
 }
 
-const origem = estacoes.find(e=>e.id===origemId)
-const destino = estacoes.find(e=>e.id===destinoId)
+const origem = estacoes.find(estacao=>estacao.id === origemId)
+const destino = estacoes.find(estacao=>estacao.id === destinoId)
+const paradasOrigem = paradasPorEstacao[origemId] || []
+const paradasDestino = paradasPorEstacao[destinoId] || []
 
-if(!origem || !destino){
+if(!origem || !destino || paradasOrigem.length === 0 || paradasDestino.length === 0){
 mostrarMensagem("Nao foi possivel localizar as estacoes informadas.")
 return
 }
@@ -135,7 +169,11 @@ return
 document.getElementById("origem-nome").innerText = origem.nome
 document.getElementById("destino-nome").innerText = destino.nome
 
-const rota = encontrarRota(grafo, origemId, destinoId)
+const rota = encontrarRota(
+grafo,
+paradasOrigem.map(parada=>parada.id),
+paradasDestino.map(parada=>parada.id)
+)
 
 if(!rota || rota.length === 0){
 mostrarMensagem("Nenhuma rota encontrada para os parametros informados.")
@@ -143,35 +181,7 @@ return
 }
 
 await carregarEstacoesOrdenadasDasLinhas(rota)
-
 mostrarResultado(rota)
-
-const voltar = document.getElementById("voltar")
-
-if(voltar){
-voltar.onclick = ()=>{
-window.location.href = "./routes.html"
-}
-}
-
-}
-
-function mostrarResultado(rota){
-
-const cont = document.getElementById("resultado")
-const segmentos = criarSegmentosDaRota(rota)
-const tempoTotal = calcularTempoTotal(rota)
-
-cont.innerHTML = `
-<div class="resumo-percurso">
-<p class="resumo-label">Percurso:</p>
-<h2 class="resumo-titulo">${escapeHtml(nomeDaEstacao(rota[0]))} -> ${escapeHtml(nomeDaEstacao(rota[rota.length - 1]))}</h2>
-</div>
-<div class="segmentos-rota">
-${segmentos.map(renderizarSegmento).join("")}
-</div>
-<p class="tempo-total">Media de tempo do trecho de ${formatarTempo(tempoTotal)}.</p>
-`
 
 }
 
@@ -198,132 +208,56 @@ estacoesOrdenadasPorLinha[linhaId] = Array.isArray(data)
 
 }
 
+function mostrarResultado(rota){
+
+const cont = document.getElementById("resultado")
+const segmentos = criarSegmentosDaRota(rota)
+const tempoTotal = calcularTempoTotal(rota)
+
+cont.innerHTML = `
+<div class="resumo-percurso">
+<p class="resumo-label">Percurso:</p>
+<h2 class="resumo-titulo">${escapeHtml(nomeDaEstacaoDaParada(rota[0]))} -> ${escapeHtml(nomeDaEstacaoDaParada(rota[rota.length - 1]))}</h2>
+</div>
+<div class="segmentos-rota">
+${segmentos.map(renderizarSegmento).join("")}
+</div>
+<p class="tempo-total">Media de tempo do trecho de ${formatarTempo(tempoTotal)}.</p>
+`
+
+}
+
 function criarSegmentosDaRota(rota){
 
-if(rota.length === 0){
-return []
-}
-
-if(rota.length === 1){
-return [{
-linha: linhasPorEstacao[rota[0]]?.[0] || null,
-estacoes: [rota[0]]
-}]
-}
-
-const linhasPorTrecho = []
-
-for(let i = 0; i < rota.length - 1; i += 1){
-const linhasEmComum = obterLinhasEmComum(
-linhasPorEstacao[rota[i]] || [],
-linhasPorEstacao[rota[i + 1]] || []
-)
-
-linhasPorTrecho.push(linhasEmComum)
-}
-
 const segmentos = []
-let linhaAtual = escolherLinhaDoTrecho(linhasPorTrecho, 0, null)
-let estacoesDoSegmento = [rota[0]]
+let segmentoAtual = null
 
-for(let i = 0; i < linhasPorTrecho.length; i += 1){
-const opcoes = linhasPorTrecho[i]
-const proximaLinha = escolherLinhaDoTrecho(linhasPorTrecho, i, linhaAtual)
+rota.forEach(paradaId=>{
 
-if(
-linhaAtual &&
-proximaLinha &&
-proximaLinha.numero !== linhaAtual.numero &&
-estacoesDoSegmento.length > 0
-){
-estacoesDoSegmento.push(rota[i])
+const parada = paradasPorId[paradaId]
 
-segmentos.push({
-linha: linhaAtual,
-estacoes: [...new Set(estacoesDoSegmento)]
-})
-
-estacoesDoSegmento = [rota[i]]
+if(!parada){
+return
 }
 
-linhaAtual = proximaLinha || linhaAtual || opcoes[0] || null
-estacoesDoSegmento.push(rota[i + 1])
+if(!segmentoAtual || segmentoAtual.linha?.id !== parada.linhas?.id){
+segmentoAtual = {
+linha: parada.linhas || null,
+estacoes: []
 }
 
-segmentos.push({
-linha: linhaAtual,
-estacoes: [...new Set(estacoesDoSegmento)]
-})
-
-return segmentos.filter(segmento=>segmento.estacoes.length > 0)
-
+segmentos.push(segmentoAtual)
 }
 
-function escolherLinhaDoTrecho(linhasPorTrecho, index, linhaPreferida){
+const ultimaEstacaoId = segmentoAtual.estacoes[segmentoAtual.estacoes.length - 1]
 
-const opcoes = linhasPorTrecho[index] || []
-
-if(opcoes.length === 0){
-return null
-}
-
-if(
-linhaPreferida &&
-opcoes.some(opcao=>opcao.numero === linhaPreferida.numero)
-){
-return linhaPreferida
-}
-
-let melhorLinha = opcoes[0]
-let maiorSequencia = -1
-
-opcoes.forEach(opcao=>{
-
-let sequencia = 0
-
-for(let i = index; i < linhasPorTrecho.length; i += 1){
-const existe = (linhasPorTrecho[i] || []).some(linha=>linha.numero === opcao.numero)
-
-if(!existe){
-break
-}
-
-sequencia += 1
-}
-
-if(sequencia > maiorSequencia){
-maiorSequencia = sequencia
-melhorLinha = opcao
+if(ultimaEstacaoId !== parada.estacao_id){
+segmentoAtual.estacoes.push(parada.estacao_id)
 }
 
 })
 
-return melhorLinha
-
-}
-
-function adicionarLinhasEmComum(destino, linhasA, linhasB){
-
-linhasA.forEach(linhaA=>{
-
-const existeNaOutra = linhasB.some(linhaB=>linhaB.numero === linhaA.numero)
-const jaFoiAdicionada = destino.some(linha=>linha.numero === linhaA.numero)
-
-if(existeNaOutra && !jaFoiAdicionada){
-destino.push(linhaA)
-}
-
-})
-
-}
-
-function obterLinhasEmComum(linhasA, linhasB){
-
-const linhasEmComum = []
-
-adicionarLinhasEmComum(linhasEmComum, linhasA, linhasB)
-
-return linhasEmComum
+return segmentos.filter(segmento=>segmento.linha && segmento.estacoes.length > 0)
 
 }
 
@@ -364,7 +298,6 @@ const linhaId = segmento.linha?.id
 const estacoesDaLinha = estacoesOrdenadasPorLinha[linhaId] || []
 const primeiraEstacaoDoSegmento = segmento.estacoes[0]
 const ultimaEstacaoDoSegmento = segmento.estacoes[segmento.estacoes.length - 1]
-
 const indiceInicial = estacoesDaLinha.indexOf(primeiraEstacaoDoSegmento)
 const indiceFinal = estacoesDaLinha.indexOf(ultimaEstacaoDoSegmento)
 
@@ -385,10 +318,15 @@ return nomeDaEstacao(ultimaEstacaoDoSegmento)
 
 function renderizarEstacaoDoSegmento(estacaoId, indiceEstacao, totalEstacoes, corLinha, linhaAtual, proximaLinha, ultimaEstacao){
 
-const linhasDaEstacao = linhasPorEstacao[estacaoId] || []
-const bolinhas = ultimaEstacao && proximaLinha
-? linhasDaEstacao
-.filter(linha=>linha.numero !== linhaAtual?.numero)
+const paradasDaEstacao = paradasPorEstacao[estacaoId] || []
+const tagsIntegracao = obterTagsDeEstacoesCompartilhadas(estacaoId, linhaAtual)
+const bolinhas = paradasDaEstacao
+.map(parada=>parada.linhas)
+.filter((linha, index, lista)=>
+linha &&
+linha.numero !== linhaAtual?.numero &&
+lista.findIndex(item=>item?.numero === linha.numero) === index
+)
 .map(linha=>`
 <span
 class="baldeacao-bolinha"
@@ -396,7 +334,6 @@ style="background-color: ${normalizarCor(linha.cor, "#0053A0")};"
 title="Linha ${escapeHtml(linha.numero ?? "")}"
 ></span>
 `).join("")
-: ""
 
 const mostrarLinhaAbaixo = indiceEstacao !== totalEstacoes - 1
 
@@ -408,6 +345,7 @@ ${mostrarLinhaAbaixo ? `<span class="timeline-linha" style="background-color: ${
 </div>
 <div class="timeline-conteudo">
 <p class="estacao-nome">${escapeHtml(nomeDaEstacao(estacaoId))}</p>
+${tagsIntegracao}
 ${bolinhas ? `<div class="estacao-linhas">${bolinhas}</div>` : ""}
 </div>
 </div>
@@ -423,13 +361,45 @@ return estacao ? estacao.nome : String(estacaoId)
 
 }
 
-function nomeDaLinha(linha){
+function nomeDaEstacaoDaParada(paradaId){
 
-if(!linha){
-return "Linha"
+const parada = paradasPorId[paradaId]
+
+return nomeDaEstacao(parada?.estacao_id)
+
 }
 
-return linha.nome || `Linha ${linha.numero}`
+function obterTagsDeEstacoesCompartilhadas(estacaoId, linhaAtual){
+
+const nomeAtual = nomeDaEstacao(estacaoId)
+const nomesCompartilhados = ESTACOES_COMPARTILHADAS[nomeAtual] || []
+
+if(nomesCompartilhados.length === 0){
+return ""
+}
+
+return nomesCompartilhados
+.map(nomeCompartilhado=>{
+const estacaoCompartilhada = estacoes.find(estacao=>estacao.nome === nomeCompartilhado)
+
+if(!estacaoCompartilhada){
+return ""
+}
+
+const linhasDaCompartilhada = (paradasPorEstacao[estacaoCompartilhada.id] || [])
+.map(parada=>parada.linhas)
+.filter((linha, index, lista)=>
+linha &&
+linha.numero !== linhaAtual?.numero &&
+lista.findIndex(item=>item?.numero === linha.numero) === index
+)
+
+const corFundo = normalizarCor(linhasDaCompartilhada[0]?.cor, "#777777")
+const corTexto = normalizarCor(linhasDaCompartilhada[0]?.text_color, "#FFFFFF")
+
+return `<span class="estacao-compartilhada" style="background-color: ${corFundo}; border-color: ${corFundo}; color: ${corTexto};">${escapeHtml(nomeCompartilhado)}</span>`
+})
+.join("")
 
 }
 

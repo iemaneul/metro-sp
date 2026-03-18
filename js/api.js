@@ -14,43 +14,73 @@ return data
 export async function getEstacoesDaLinha(linhaId){
 
 const { data } = await supabase
-.from("linha_estacoes")
+.from("paradas_linha")
 .select(`
 ordem,
 estacoes(*)
 `)
-.eq("linha_id",linhaId)
+.eq("linha_id", linhaId)
 .order("ordem")
 
 return data
 
 }
 
-export async function getConexoes(){
+export async function getParadasLinha(){
 
 const { data } = await supabase
-.from("conexoes_estacoes")
-.select("*")
+.from("paradas_linha")
+.select(`
+id,
+linha_id,
+estacao_id,
+ordem,
+nome_exibicao,
+linhas(
+id,
+numero,
+nome,
+cor,
+text_color
+),
+estacoes(
+id,
+nome
+)
+`)
+.order("linha_id")
+.order("ordem")
 
 return data
 
 }
 
-export async function getLinhasDasEstacoes(){
+export async function getTrechosLinha(){
 
 const { data } = await supabase
-.from("linha_estacoes")
+.from("trechos_linha")
+.select(`
+linha_id,
+parada_origem_id,
+parada_destino_id,
+tempo_segundos,
+bidirecional
+`)
+
+return data
+
+}
+
+export async function getBaldeacoes(){
+
+const { data } = await supabase
+.from("baldeacoes")
 .select(`
 estacao_id,
-linhas(
-id,
-nome,
-numero,
-cor,
-text_color
-)
+parada_origem_id,
+parada_destino_id,
+tempo_segundos
 `)
-.order("linha_id")
 
 return data
 

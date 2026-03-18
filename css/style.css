@@ -209,6 +209,7 @@ a {
     flex-direction: column;
     gap: 4px;
     margin-bottom: 24px;
+    display: none;
 }
 
 .topo-rota p {
@@ -307,6 +308,7 @@ a {
 .timeline-conteudo {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 8px;
     padding-bottom: 12px;
     min-height: 16px;
@@ -323,6 +325,18 @@ a {
     display: flex;
     align-items: center;
     gap: 6px;
+}
+
+.estacao-compartilhada {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border: 1px solid #777777;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1;
+    background-color: #FFFFFF;
 }
 
 .linha-badge {

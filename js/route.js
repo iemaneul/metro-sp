@@ -1,34 +1,71 @@
-export function encontrarRota(grafo, origem, destino){
+export function encontrarRota(grafo, origens, destinos){
 
-let fila = [[origem]]
-let visitados = new Set()
+const origensLista = Array.isArray(origens) ? origens : [origens]
+const destinosLista = Array.isArray(destinos) ? destinos : [destinos]
+const destinosSet = new Set(destinosLista)
+const distancias = new Map()
+const anteriores = new Map()
+const visitados = new Set()
+const fila = []
+
+origensLista.forEach(origem=>{
+distancias.set(origem, 0)
+fila.push({
+no: origem,
+distancia: 0
+})
+})
 
 while(fila.length){
 
-let caminho = fila.shift()
+fila.sort((a, b)=>a.distancia - b.distancia)
 
-let estacao = caminho[caminho.length-1]
+const atual = fila.shift()
 
-if(estacao === destino){
-return caminho
+if(!atual || visitados.has(atual.no)){
+continue
 }
 
-if(!visitados.has(estacao)){
+visitados.add(atual.no)
 
-visitados.add(estacao)
+if(destinosSet.has(atual.no)){
+return reconstruirCaminho(anteriores, atual.no)
+}
 
-let vizinhos = grafo[estacao] || []
+const vizinhos = grafo[atual.no] || []
 
-vizinhos.forEach(v=>{
+vizinhos.forEach(vizinho=>{
 
-fila.push([...caminho,v.destino])
+const novaDistancia = atual.distancia + Number(vizinho.tempo || 0)
+const distanciaAtual = distancias.get(vizinho.destino)
+
+if(distanciaAtual === undefined || novaDistancia < distanciaAtual){
+distancias.set(vizinho.destino, novaDistancia)
+anteriores.set(vizinho.destino, atual.no)
+fila.push({
+no: vizinho.destino,
+distancia: novaDistancia
+})
+}
 
 })
 
 }
 
+return null
+
 }
 
-return null
+function reconstruirCaminho(anteriores, destino){
+
+const caminho = [destino]
+let atual = destino
+
+while(anteriores.has(atual)){
+atual = anteriores.get(atual)
+caminho.unshift(atual)
+}
+
+return caminho
 
 }
