@@ -347,6 +347,7 @@ a {
     height: 12px;
     border-radius: 50%;
     flex-shrink: 0;
+    margin-top: -4px;
 }
 
 .tempo-total {
