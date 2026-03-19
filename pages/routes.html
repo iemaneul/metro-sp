@@ -14,7 +14,7 @@
     <section id="header">
         <div class="navbar">
             <div class="title">
-                <a href="../index.html"><span>🡄</span></a>
+                <a href="../index.html" class="back-link" aria-label="Voltar"><span class="back-icon">&lt;</span></a>
                 <h1>Definir rota</h1>
             </div>
         </div>
@@ -30,20 +30,21 @@
             <div class="form">
                 <div>
                     <label>Origem</label>
-                    <select id="origem"></select>
+                    <input id="origem" type="text" list="estacoes-lista" placeholder="Digite o nome da estação" autocomplete="off">
                 </div>
 
                 <button id="invert" class="invert-btn"><img src="../assets/icons/top-bottom.png" alt=""></button>
 
                 <div>
                     <label>Destino</label>
-                    <select id="destino"></select>
+                    <input id="destino" type="text" list="estacoes-lista" placeholder="Digite o nome da estação" autocomplete="off">
                 </div>
             </div>
 
         </div>
 
         <button id="buscar">Encontrar rota</button>
+        <datalist id="estacoes-lista"></datalist>
 
     </div>
 

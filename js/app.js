@@ -9,6 +9,7 @@ let paradas = []
 let paradasPorId = {}
 let paradasPorEstacao = {}
 let estacoesOrdenadasPorLinha = {}
+let estacoesPorNome = {}
 const ESTACOES_COMPARTILHADAS = {
 "Paulista": ["Consolacao"],
 "Consolacao": ["Paulista"]
@@ -38,21 +39,23 @@ const { data } = await supabase
 .order("nome")
 
 estacoes = Array.isArray(data) ? data : []
+estacoesPorNome = {}
+
+estacoes.forEach(estacao=>{
+estacoesPorNome[normalizarTexto(estacao.nome)] = estacao
+})
 
 const origem = document.getElementById("origem")
 const destino = document.getElementById("destino")
+const lista = document.getElementById("estacoes-lista")
 
-if(!origem || !destino){
+if(!origem || !destino || !lista){
 return
 }
 
-origem.innerHTML = ""
-destino.innerHTML = ""
-
-estacoes.forEach(estacao=>{
-origem.innerHTML += `<option value="${estacao.id}">${estacao.nome}</option>`
-destino.innerHTML += `<option value="${estacao.id}">${estacao.nome}</option>`
-})
+lista.innerHTML = estacoes
+.map(estacao=>`<option value="${escapeHtml(estacao.nome)}"></option>`)
+.join("")
 
 }
 
@@ -118,12 +121,29 @@ document
 .getElementById("buscar")
 .onclick = ()=>{
 
-const origemId = parseInt(document.getElementById("origem").value)
-const destinoId = parseInt(document.getElementById("destino").value)
+const origemInput = document.getElementById("origem")
+const destinoInput = document.getElementById("destino")
+const origem = obterEstacaoPorNome(origemInput.value)
+const destino = obterEstacaoPorNome(destinoInput.value)
+
+limparEstadoDeErro(origemInput)
+limparEstadoDeErro(destinoInput)
+
+if(!origem){
+marcarCampoComoInvalido(origemInput)
+origemInput.focus()
+return
+}
+
+if(!destino){
+marcarCampoComoInvalido(destinoInput)
+destinoInput.focus()
+return
+}
 
 const params = new URLSearchParams({
-origem: origemId,
-destino: destinoId
+origem: origem.id,
+destino: destino.id
 })
 
 window.location.href = `./result.html?${params.toString()}`
@@ -142,6 +162,47 @@ origem.value = destino.value
 destino.value = temp
 
 }
+
+["origem", "destino"].forEach(id=>{
+const campo = document.getElementById(id)
+
+campo?.addEventListener("input", ()=>limparEstadoDeErro(campo))
+campo?.addEventListener("blur", ()=>preencherNomeOficialDaEstacao(campo))
+})
+
+}
+
+function obterEstacaoPorNome(nome){
+
+if(typeof nome !== "string"){
+return null
+}
+
+return estacoesPorNome[normalizarTexto(nome)] || null
+
+}
+
+function preencherNomeOficialDaEstacao(campo){
+
+const estacao = obterEstacaoPorNome(campo.value)
+
+if(estacao){
+campo.value = estacao.nome
+}
+
+}
+
+function marcarCampoComoInvalido(campo){
+
+campo.style.borderColor = "#c62828"
+campo.style.boxShadow = "0 0 0 3px rgba(198, 40, 40, 0.12)"
+
+}
+
+function limparEstadoDeErro(campo){
+
+campo.style.borderColor = ""
+campo.style.boxShadow = ""
 
 }
 
@@ -471,6 +532,16 @@ return String(valor)
 .replaceAll(">","&gt;")
 .replaceAll('"',"&quot;")
 .replaceAll("'","&#39;")
+
+}
+
+function normalizarTexto(texto){
+
+return String(texto || "")
+.normalize("NFD")
+.replace(/[\u0300-\u036f]/g, "")
+.trim()
+.toLowerCase()
 
 }
 
