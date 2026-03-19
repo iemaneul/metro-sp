@@ -30,21 +30,26 @@
             <div class="form">
                 <div>
                     <label>Origem</label>
-                    <input id="origem" type="text" list="estacoes-lista" placeholder="Digite o nome da estação" autocomplete="off">
+                    <div class="campo-estacao">
+                        <input id="origem" type="text" placeholder="Digite o nome da estação" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="origem-sugestoes">
+                        <div id="origem-sugestoes" class="lista-sugestoes hidden" role="listbox"></div>
+                    </div>
                 </div>
 
                 <button id="invert" class="invert-btn"><img src="../assets/icons/top-bottom.png" alt=""></button>
 
                 <div>
                     <label>Destino</label>
-                    <input id="destino" type="text" list="estacoes-lista" placeholder="Digite o nome da estação" autocomplete="off">
+                    <div class="campo-estacao">
+                        <input id="destino" type="text" placeholder="Digite o nome da estação" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="destino-sugestoes">
+                        <div id="destino-sugestoes" class="lista-sugestoes hidden" role="listbox"></div>
+                    </div>
                 </div>
             </div>
 
         </div>
 
         <button id="buscar">Encontrar rota</button>
-        <datalist id="estacoes-lista"></datalist>
 
     </div>
 

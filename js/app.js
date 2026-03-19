@@ -10,6 +10,7 @@ let paradasPorId = {}
 let paradasPorEstacao = {}
 let estacoesOrdenadasPorLinha = {}
 let estacoesPorNome = {}
+const estadosBusca = {}
 const ESTACOES_COMPARTILHADAS = {
 "Paulista": ["Consolacao"],
 "Consolacao": ["Paulista"]
@@ -47,15 +48,10 @@ estacoesPorNome[normalizarTexto(estacao.nome)] = estacao
 
 const origem = document.getElementById("origem")
 const destino = document.getElementById("destino")
-const lista = document.getElementById("estacoes-lista")
 
-if(!origem || !destino || !lista){
+if(!origem || !destino){
 return
 }
-
-lista.innerHTML = estacoes
-.map(estacao=>`<option value="${escapeHtml(estacao.nome)}"></option>`)
-.join("")
 
 }
 
@@ -165,10 +161,187 @@ destino.value = temp
 
 ["origem", "destino"].forEach(id=>{
 const campo = document.getElementById(id)
+const lista = document.getElementById(`${id}-sugestoes`)
+estadosBusca[id] = {
+sugestoes: [],
+indiceAtivo: -1
+}
 
-campo?.addEventListener("input", ()=>limparEstadoDeErro(campo))
-campo?.addEventListener("blur", ()=>preencherNomeOficialDaEstacao(campo))
+lista?.addEventListener("mousedown", evento=>{
+const item = evento.target.closest(".lista-sugestao-item")
+
+if(!item){
+return
+}
+
+evento.preventDefault()
+selecionarEstacao(campo, lista, Number(item.dataset.estacaoId))
 })
+
+lista?.addEventListener("click", evento=>{
+const item = evento.target.closest(".lista-sugestao-item")
+
+if(!item){
+return
+}
+
+evento.preventDefault()
+selecionarEstacao(campo, lista, Number(item.dataset.estacaoId))
+})
+
+campo?.addEventListener("input", ()=>{
+limparEstadoDeErro(campo)
+atualizarSugestoes(campo, lista)
+})
+campo?.addEventListener("focus", ()=>atualizarSugestoes(campo, lista))
+campo?.addEventListener("keydown", evento=>navegarSugestoes(evento, campo, lista))
+campo?.addEventListener("blur", ()=>window.setTimeout(()=>{
+preencherNomeOficialDaEstacao(campo)
+fecharSugestoes(lista)
+}, 150))
+})
+
+document.addEventListener("click", evento=>{
+["origem", "destino"].forEach(id=>{
+const campo = document.getElementById(id)
+const lista = document.getElementById(`${id}-sugestoes`)
+const wrapper = campo?.closest(".campo-estacao")
+
+if(wrapper && !wrapper.contains(evento.target)){
+fecharSugestoes(lista)
+}
+})
+})
+
+}
+
+function atualizarSugestoes(campo, lista){
+
+if(!campo || !lista){
+return
+}
+
+const termo = normalizarTexto(campo.value)
+const estado = estadosBusca[campo.id]
+
+if(!termo){
+estado.sugestoes = []
+estado.indiceAtivo = -1
+fecharSugestoes(lista)
+return
+}
+
+const sugestoes = estacoes
+.filter(estacao=>normalizarTexto(estacao.nome).includes(termo))
+.slice(0, 8)
+
+if(sugestoes.length === 0){
+estado.sugestoes = []
+estado.indiceAtivo = -1
+fecharSugestoes(lista)
+return
+}
+
+estado.sugestoes = sugestoes
+estado.indiceAtivo = 0
+renderizarSugestoes(campo, lista)
+lista.classList.remove("hidden")
+campo.setAttribute("aria-expanded", "true")
+
+}
+
+function renderizarSugestoes(campo, lista){
+
+const estado = estadosBusca[campo.id]
+
+if(!estado || !lista){
+return
+}
+
+lista.innerHTML = estado.sugestoes
+.map((estacao, indice)=>`
+<div
+role="option"
+class="lista-sugestao-item ${indice === estado.indiceAtivo ? "is-active" : ""}"
+aria-selected="${indice === estado.indiceAtivo ? "true" : "false"}"
+data-estacao-id="${estacao.id}"
+>
+${escapeHtml(estacao.nome)}
+</div>
+`).join("")
+
+}
+
+function navegarSugestoes(evento, campo, lista){
+
+const estado = estadosBusca[campo.id]
+
+if(!estado || estado.sugestoes.length === 0){
+return
+}
+
+if(evento.key === "ArrowDown"){
+evento.preventDefault()
+estado.indiceAtivo = (estado.indiceAtivo + 1) % estado.sugestoes.length
+renderizarSugestoes(campo, lista)
+return
+}
+
+if(evento.key === "ArrowUp"){
+evento.preventDefault()
+estado.indiceAtivo = (estado.indiceAtivo - 1 + estado.sugestoes.length) % estado.sugestoes.length
+renderizarSugestoes(campo, lista)
+return
+}
+
+if(evento.key === "Enter"){
+evento.preventDefault()
+const estacao = estado.sugestoes[estado.indiceAtivo]
+
+if(estacao){
+selecionarEstacao(campo, lista, estacao.id)
+}
+return
+}
+
+if(evento.key === "Escape"){
+fecharSugestoes(lista)
+}
+
+}
+
+function selecionarEstacao(campo, lista, estacaoId){
+
+const estacao = estacoes.find(item=>item.id === estacaoId)
+
+if(!estacao){
+return
+}
+
+campo.value = estacao.nome
+limparEstadoDeErro(campo)
+fecharSugestoes(lista)
+campo.focus()
+
+}
+
+function fecharSugestoes(lista){
+
+if(!lista){
+return
+}
+
+const campoId = lista.id.replace("-sugestoes", "")
+const campo = document.getElementById(campoId)
+const estado = estadosBusca[campoId]
+
+if(estado){
+estado.indiceAtivo = -1
+}
+
+lista.innerHTML = ""
+lista.classList.add("hidden")
+campo?.setAttribute("aria-expanded", "false")
 
 }
 
