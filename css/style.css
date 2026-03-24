@@ -3,6 +3,7 @@
 @import url('https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-straight/css/uicons-regular-straight.css');
 @import url('https://cdn-uicons.flaticon.com/4.0.0/uicons-thin-rounded/css/uicons-thin-rounded.css');
 @import url('https://cdn-uicons.flaticon.com/4.0.0/uicons-regular-rounded/css/uicons-regular-rounded.css');
+@import url('https://cdn-uicons.flaticon.com/4.0.0/uicons-solid-chubby/css/uicons-solid-chubby.css');
 
 body{
     font-family: 'Poppins', sans-serif;
@@ -729,4 +730,13 @@ span.horarios {
 .social-networks button i {
     height: 13px;
     width: 13px;
+}
+
+.linha-status {
+    color: #20b65f;
+    background-color: #EAFBF1;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
 }
