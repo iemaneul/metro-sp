@@ -740,3 +740,37 @@ span.horarios {
     font-size: 11px;
     font-weight: 500;
 }
+
+.ios-badge {
+    width: 31px;
+    height: 31px;
+    border-radius: 50%;
+    background-color: #f3f5f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    color: #6e7d91;
+    border: 1px solid #6e7d91;
+    font-size: 14px;
+}
+
+.android-badge {
+    width: 31px;
+    height: 31px;
+    border-radius: 50%;
+    background-color: #c9ffd5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    color: #2F9D48;
+    border: 1px solid #2F9D48;
+    font-size: 14px;
+}
+
+.ios-badge i, .android-badge i {
+    display: flex;
+}
