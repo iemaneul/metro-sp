@@ -67,7 +67,7 @@ Toda a interface foi construída com HTML, CSS e JavaScript puro.
 
 Como o projeto é estático e usa JavaScript no navegador, basta abrir a URL publicada:
 
-`https://iemaneul.github.io/metro-sp/`
+`https://iemaneul.github.io/mobilidade-sp/`
 
 Se quiser rodar localmente, você pode servir a pasta do projeto com qualquer servidor estático simples.
 
@@ -81,4 +81,4 @@ Se quiser rodar localmente, você pode servir a pasta do projeto com qualquer se
 
 Projeto publicado em:
 
-`https://iemaneul.github.io/metro-sp/`
+`https://iemaneul.github.io/mobilidade-sp/`
