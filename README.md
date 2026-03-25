@@ -6,7 +6,7 @@ Aplicação web focada em consulta de rotas, linhas e estações do sistema metr
 
 Use no celular por este link:
 
-`https://iemaneul.github.io/metro-sp/`
+`https://iemaneul.github.io/mobilidade-sp/`
 
 Sugestão: abra direto no navegador do celular para testar a experiência mobile, especialmente a busca de origem e destino.
 
@@ -18,15 +18,6 @@ Sugestão: abra direto no navegador do celular para testar a experiência mobile
 - Abrir os detalhes de cada linha
 - Listar as estações em ordem
 - Mostrar baldeações das estações na visualização da linha
-
-## Telas atuais
-
-- Home com atalhos principais
-- Definição de rota
-- Resultado da rota
-- Listagem de linhas
-- Detalhe da linha
-- Página inicial de mapa para evolução futura
 
 ## Tecnologias usadas
 
