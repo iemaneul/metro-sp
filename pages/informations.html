@@ -3,9 +3,9 @@
 
 <head>
 <meta charset="UTF-8">
-<title>Mobilidade SP</title>
+    <title>Mobilidade SP</title>
 
-<script>
+    <script>
     (function () {
         const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
         const isSmallScreen = window.innerWidth <= 768;
@@ -14,7 +14,7 @@
             window.location.href = "desktop-block.html";
         }
     })();
-</script>
+    </script>
 
 <link rel="stylesheet" href="../css/style.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,22 +27,22 @@
         <div class="navbar">
             <div class="title">
                 <a href="../index.html" class="back-link" aria-label="Voltar"><span class="back-icon">&lt;</span></a>
-                <h1>Sites oficiais</h1>
+                <h1>Informações</h1>
             </div>
         </div>
     </section>
 
     <section id="tela-linhas">
         <div class="linhas-intro">
-            <h2>Sites oficiais</h2>
-            <p>Confira os sites oficiais do sistema de transporte metropolitano.</p>
+            <h2>Informações</h2>
+            <p>Confira todas as informações adicionais que você precisa saber sobre o sistema de transporte metropolitano.</p>
         </div>
 
         <div id="lista-linhas" class="lista-linhas">
-            <a class="linha-card" href="https://www.metro.sp.gov.br/pt_BR/" target="_blank">
+            <a class="linha-card" href="schedules.html">
                 <div class="linha-card-topo">
                     <div class="linha-card-principal">
-                        <h3>Metro SP</h3>
+                        <h3><i class="fi fi-sr-alarm-clock"></i>Horários de funcionamento</h3>
                     </div>
                     <div class="d-flex fd-row ai-center gap-10">
                         <span class="arrow-detail">&gt;</span>
@@ -50,32 +50,10 @@
                 </div>
             </a>
 
-            <a class="linha-card" href="https://www.cptm.sp.gov.br/cptm" target="_blank">
+            <a class="linha-card" href="ticket.html">
                 <div class="linha-card-topo">
                     <div class="linha-card-principal">
-                        <h3>CPTM</h3>
-                    </div>
-                    <div class="d-flex fd-row ai-center gap-10">
-                        <span class="arrow-detail">&gt;</span>
-                    </div>
-                </div>
-            </a>
-
-            <a class="linha-card" href="https://trilhos.motiva.com.br/viaquatro/" target="_blank">
-                <div class="linha-card-topo">
-                    <div class="linha-card-principal">
-                        <h3>Via Quatro</h3>
-                    </div>
-                    <div class="d-flex fd-row ai-center gap-10">
-                        <span class="arrow-detail">&gt;</span>
-                    </div>
-                </div>
-            </a>
-
-            <a class="linha-card" href="https://trilhos.motiva.com.br/viamobilidade8e9/" target="_blank">
-                <div class="linha-card-topo">
-                    <div class="linha-card-principal">
-                        <h3>Via Mobilidade</h3>
+                        <h3><i class="fi fi-sr-ticket-alt"></i>Tarifas e bilhete único</h3>
                     </div>
                     <div class="d-flex fd-row ai-center gap-10">
                         <span class="arrow-detail">&gt;</span>
@@ -83,7 +61,6 @@
                 </div>
             </a>
         </div>
-
     </section>
 
 </body>

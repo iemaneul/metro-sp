@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mobilidade SP</title>
+
+    <script>
+    (function () {
+        const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+        const isSmallScreen = window.innerWidth <= 768;
+
+        if (!isMobile && !isSmallScreen && !window.location.pathname.includes("desktop-block")) {
+            window.location.href = "desktop-block.html";
+        }
+    })();
+    </script>
+
+    <link rel="stylesheet" href="../css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0053A0">
+</head>
+
+<body>
+    <section id="header">
+        <div class="navbar">
+            <div class="title">
+                <a href="informations.html" class="back-link" aria-label="Voltar"><span class="back-icon">&lt;</span></a>
+                <h1>Informações</h1>
+            </div>
+        </div>
+    </section>
+    
+    <section id="tela-linhas">
+        <div class="linhas-intro">
+            <h2>Horários de funcionamento</h2>
+            <p>Confira os horários de funcionamento das linhas.</p>
+        </div>
+
+        <div id="lista-linhas" class="lista-linhas">
+            <div class="linha-card">
+                <div class="linha-card-topo">
+                    <div class="linha-card-principal">
+                        <span class="linha-badge-detalhe" style="background-color: #1934A3; color: #FFFFFF;">1</span>
+                        <span class="linha-badge-detalhe" style="background-color: #008061; color: #FFFFFF;">2</span>
+                        <span class="linha-badge-detalhe" style="background-color: #EE3E42; color: #FFFFFF;">3</span>
+                        <span class="linha-badge-detalhe" style="background-color: #B7B7B7; color: #FFFFFF;">15</span>
+                    </div>
+                    <span class="linha-operadora-tag">Metro</span>
+                </div>
+                <span class="horarios">Todos os dias, das 04h40 às 00h.</span>
+                <span class="horarios">Funcionamento 24h (sábado para domingo - experimental)</span>
+            </div>
+
+            <div class="linha-card">
+                <div class="linha-card-topo">
+                    <div class="linha-card-principal">
+                        <span class="linha-badge-detalhe" style="background-color: #FFD200; color: #000000;">4</span>
+                    </div>
+                    <span class="linha-operadora-tag">ViaQuatro</span>
+                </div>
+                <span class="horarios">Todos os dias, das 04h40 às 00h.</span>
+            </div>
+
+            <div class="linha-card">
+                <div class="linha-card-topo">
+                    <div class="linha-card-principal">
+                        <span class="linha-badge-detalhe" style="background-color: #A64CA6; color: #FFFFFF;">5</span>
+                    </div>
+                    <span class="linha-operadora-tag">ViaMobilidade</span>
+                </div>
+                <span class="horarios">Todos os dias, das 04h40 às 00h.</span>
+                <div class="linha-card-topo">
+                    <div class="linha-card-principal">
+                        <span class="linha-badge-detalhe" style="background-color: #9E9E9E; color: #FFFFFF;">8</span>
+                        <span class="linha-badge-detalhe" style="background-color: #00A88E; color: #FFFFFF;">9</span>
+                    </div>
+                </div>
+                <span class="horarios">Todos os dias, das 04h às 00h.</span>
+            </div>
+
+            <div class="linha-card">
+                <div class="linha-card-topo">
+                    <div class="linha-card-principal">
+                        <span class="linha-badge-detalhe" style="background-color: #A61E22; color: #FFFFFF;">7</span>
+                        <span class="linha-badge-detalhe" style="background-color: #2AB7CA; color: #FFFFFF;">10</span>
+                        <span class="linha-badge-detalhe" style="background-color: #F05A28; color: #FFFFFF;">11</span>
+                        <span class="linha-badge-detalhe" style="background-color: #0072CE; color: #FFFFFF;">12</span>
+                        <span class="linha-badge-detalhe" style="background-color: #00A651; color: #FFFFFF;">13</span>
+                    </div>
+                    <span class="linha-operadora-tag">CPTM</span>
+                </div>
+                <span class="horarios">Todos os dias, das 04h às 00h.</span>
+            </div>
+
+        </div>
+    </section>
+</body>
+</html>

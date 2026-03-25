@@ -3,7 +3,19 @@
 
 <head>
 <meta charset="UTF-8">
-<title>Resultado da rota | Metrô SP</title>
+    <title>Mobilidade SP</title>
+
+    <script>
+    (function () {
+        const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+        const isSmallScreen = window.innerWidth <= 768;
+
+        if (!isMobile && !isSmallScreen && !window.location.pathname.includes("desktop-block")) {
+            window.location.href = "desktop-block.html";
+        }
+    })();
+    </script>
+
 <link rel="stylesheet" href="../css/style.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0053A0">

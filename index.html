@@ -3,7 +3,19 @@
 
 <head>
 <meta charset="UTF-8">
-<title>Metrô SP</title>
+    <title>Mobilidade SP</title>
+
+    <script>
+    (function () {
+        const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+        const isSmallScreen = window.innerWidth <= 768;
+
+        if (!isMobile && !isSmallScreen && !window.location.pathname.includes("desktop-block")) {
+            window.location.href = "pages/desktop-block.html";
+        }
+    })();
+    </script>
+
 <link rel="stylesheet" href="css/style.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0053A0">
@@ -62,8 +74,10 @@
                 </a>
             </div>
             <div>
-                <img src="assets/icons/info.png" alt="">
-                <p>Informações</p>
+                <a href="pages/informations.html" class="grid-service-link">
+                    <img src="assets/icons/info.png" alt="">
+                    <p>Informações</p>
+                </a>
             </div>
             <div>
                 <a href="pages/contacts.html" class="grid-service-link">
