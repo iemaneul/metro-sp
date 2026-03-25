@@ -1,4 +1,4 @@
-# Metro SP
+# Mobilidade SP
 
 Aplicação web focada em consulta de rotas, linhas e estações do sistema metroferroviário de São Paulo, com interface pensada para funcionar bem no celular.
 
